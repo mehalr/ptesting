@@ -1,0 +1,47 @@
+import plotly.graph_objs as go
+from ipywidgets import interact, widgets
+from IPython.display import display
+
+# Sample data
+x = [0, 1, 2, 3, 4]
+y1 = [0, 1, 4, 9, 16]
+y2 = [0, 2, 4, 6, 8]
+y3 = [0, 3, 6, 9, 12]
+
+# Create traces for each line
+trace1 = go.Scatter(x=x, y=y1, mode='lines', name='Line 1')
+trace2 = go.Scatter(x=x, y=y2, mode='lines', name='Line 2')
+trace3 = go.Scatter(x=x, y=y3, mode='lines', name='Line 3')
+
+# Create initial data list with all traces
+data = [trace1, trace2, trace3]
+
+# Create figure layout
+layout = go.Layout(
+    title='Interactive Plot with Radio Buttons',
+    xaxis=dict(title='X-axis'),
+    yaxis=dict(title='Y-axis'),
+    showlegend=True
+)
+
+# Create the plot figure
+fig = go.FigureWidget(data=data, layout=layout)
+
+# Create radio buttons for each trace
+buttons = []
+for trace in fig.data:
+    visible = True  # Initially set all traces to visible
+    button = widgets.ToggleButton(description=trace.name, value=visible)
+    buttons.append(button)
+
+# Define update function to toggle trace visibility
+def update_visibility(change):
+    for i, button in enumerate(buttons):
+        fig.data[i].visible = button.value
+
+# Register update_visibility function with button's observe method
+for button in buttons:
+    button.observe(update_visibility, 'value')
+
+# Display the plot and buttons
+display(widgets.VBox([fig, *buttons]))
