@@ -1,5 +1,5 @@
 import plotly.graph_objs as go
-from ipywidgets import interact, widgets
+from ipywidgets import RadioButtons, VBox
 from IPython.display import display
 
 # Sample data
@@ -9,9 +9,9 @@ y2 = [0, 2, 4, 6, 8]
 y3 = [0, 3, 6, 9, 12]
 
 # Create traces for each line
-trace1 = go.Scatter(x=x, y=y1, mode='lines', name='Line 1')
-trace2 = go.Scatter(x=x, y=y2, mode='lines', name='Line 2')
-trace3 = go.Scatter(x=x, y=y3, mode='lines', name='Line 3')
+trace1 = go.Scatter(x=x, y=y1, mode='lines', name='Line 1', visible=True)
+trace2 = go.Scatter(x=x, y=y2, mode='lines', name='Line 2', visible=True)
+trace3 = go.Scatter(x=x, y=y3, mode='lines', name='Line 3', visible=True)
 
 # Create initial data list with all traces
 data = [trace1, trace2, trace3]
@@ -27,21 +27,26 @@ layout = go.Layout(
 # Create the plot figure
 fig = go.FigureWidget(data=data, layout=layout)
 
-# Create radio buttons for each trace
-buttons = []
-for trace in fig.data:
-    visible = True  # Initially set all traces to visible
-    button = widgets.ToggleButton(description=trace.name, value=visible)
-    buttons.append(button)
+# Define radio button options
+options = [trace.name for trace in fig.data]
 
-# Define update function to toggle trace visibility
-def update_visibility(change):
-    for i, button in enumerate(buttons):
-        fig.data[i].visible = button.value
+# Create radio buttons widget
+radio_buttons = RadioButtons(
+    options=options,
+    description='Lines:',
+    disabled=False
+)
 
-# Register update_visibility function with button's observe method
-for button in buttons:
-    button.observe(update_visibility, 'value')
+# Define function to update trace visibility based on selected radio button
+def update_lines(selected_line):
+    for trace in fig.data:
+        if trace.name == selected_line:
+            trace.visible = True
+        else:
+            trace.visible = False
 
-# Display the plot and buttons
-display(widgets.VBox([fig, *buttons]))
+# Register update_lines function with radio buttons' observe method
+radio_buttons.observe(lambda change: update_lines(change.new), names='value')
+
+# Display the plot and radio buttons
+display(VBox([radio_buttons, fig]))
