@@ -4,21 +4,31 @@ from IPython.display import display
 
 # Sample data
 x = [0, 1, 2, 3, 4]
-y1 = [0, 1, 4, 9, 16]
-y2 = [0, 2, 4, 6, 8]
-y3 = [0, 3, 6, 9, 12]
+y1_line1 = [0, 1, 2, 3, 4]
+y2_line1 = [0, 1, 4, 9, 16]
+
+y1_line2 = [0, 1, 2, 3, 4]
+y2_line2 = [0, 2, 4, 6, 8]
+
+y1_line3 = [0, 1, 2, 3, 4]
+y2_line3 = [0, 3, 6, 9, 12]
 
 # Create traces for each line
-trace1 = go.Scatter(x=x, y=y1, mode='lines', name='Line 1', visible=True)
-trace2 = go.Scatter(x=x, y=y2, mode='lines', name='Line 2', visible=True)
-trace3 = go.Scatter(x=x, y=y3, mode='lines', name='Line 3', visible=True)
+trace1_line1 = go.Scatter(x=x, y=y1_line1, mode='lines', name='Line 1, Scatter 1', visible=True)
+trace2_line1 = go.Scatter(x=x, y=y2_line1, mode='lines', name='Line 2, Scatter 1', visible=True)
+
+trace1_line2 = go.Scatter(x=x, y=y1_line2, mode='lines', name='Line 1, Scatter 2', visible=False)
+trace2_line2 = go.Scatter(x=x, y=y2_line2, mode='lines', name='Line 2, Scatter 2', visible=False)
+
+trace1_line3 = go.Scatter(x=x, y=y1_line3, mode='lines', name='Line 1, Scatter 3', visible=False)
+trace2_line3 = go.Scatter(x=x, y=y2_line3, mode='lines', name='Line 2, Scatter 3', visible=False)
 
 # Create initial data list with all traces
-data = [trace1, trace2, trace3]
+data = [trace1_line1, trace2_line1, trace1_line2, trace2_line2, trace1_line3, trace2_line3]
 
 # Create figure layout
 layout = go.Layout(
-    title='Interactive Plot with Radio Buttons',
+    title='Interactive Scatter Plot with Radio Buttons',
     xaxis=dict(title='X-axis'),
     yaxis=dict(title='Y-axis'),
     showlegend=True
@@ -28,19 +38,19 @@ layout = go.Layout(
 fig = go.FigureWidget(data=data, layout=layout)
 
 # Define radio button options
-options = [trace.name for trace in fig.data]
+options = [trace.name.split(', ')[1] for trace in fig.data if 'Scatter' in trace.name]
 
 # Create radio buttons widget
 radio_buttons = RadioButtons(
     options=options,
-    description='Lines:',
+    description='Scatter Plots:',
     disabled=False
 )
 
 # Define function to update trace visibility based on selected radio button
-def update_lines(selected_line):
+def update_lines(selected_scatter):
     for trace in fig.data:
-        if trace.name == selected_line:
+        if selected_scatter in trace.name:
             trace.visible = True
         else:
             trace.visible = False
